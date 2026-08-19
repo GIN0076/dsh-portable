@@ -1,0 +1,36 @@
+# --- Official upstream source (fetched & built at packaging time, see docs/BUILDING.md) ---
+/src/
+
+# --- Node / deps ---
+node_modules/
+shell/node_modules/
+runtime/
+
+# --- Build artifacts ---
+dist/
+build/stage/
+build/stg/
+*.7z
+*.tgz
+*.bak
+logs/
+.updating
+
+# --- Machine-specific / sensitive ---
+shell/launcher-config.json
+shell/install-log.txt
+.npm-cache/
+backups/
+*.log
+
+# --- Third-party build tools (download per docs/BUILDING.md) ---
+tools/InnoSetup7/
+tools/7zr.exe
+tools/innosetup-*.exe
+
+# --- OS / editor ---
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.tmp
+~$*

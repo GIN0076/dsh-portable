@@ -1,0 +1,21 @@
+﻿DSH-Portable 许可协议与免责声明
+License Agreement & Disclaimer
+================================
+
+【中文】
+
+1. 性质：本软件（DSH-Portable）基于 DeepSeek 官方 MIT 许可开源代码构建，属非官方发行版；与 DeepSeek 无关联、未获背书。
+2. 担保：本软件按现状提供，不提供任何明示或暗示的担保，包括但不限于适销性、特定用途适用性与不侵权。
+3. 责任：使用本软件产生的风险与 API 费用由使用者自行承担；作者不对任何直接、间接或附带损失负责。
+4. 数据与隐私：API Key 等凭据仅保存在本机数据目录（默认 ~/.dsh，可自定义），不会上传；遥测默认关闭；审计日志仅存本机。
+5. 使用：本软件仅供个人本地使用；使用 DeepSeek 或第三方模型服务时需遵守相应服务条款。
+6. 卸载：卸载仅删除程序文件与快捷方式，不自动删除数据目录；如需彻底清除请手动删除数据目录。
+
+【English】
+
+1. Nature: DSH-Portable is an unofficial build based on DeepSeek's official MIT-licensed open source code; not affiliated with or endorsed by DeepSeek.
+2. Warranty: The software is provided "AS IS" without warranty of any kind, express or implied, including but not limited to merchantability, fitness for a particular purpose, and non-infringement.
+3. Liability: Users bear all risks and API costs arising from the use of this software; the author is not liable for any direct, indirect, or consequential damages.
+4. Data & Privacy: Credentials such as API keys are stored only in the local data directory (default ~/.dsh, customizable) and are never uploaded; telemetry is off by default; audit logs stay on this machine.
+5. Usage: For personal local use only; compliance with the terms of DeepSeek or third-party model services applies.
+6. Uninstall: Uninstalling removes program files and shortcuts only; your data directory is preserved. Delete it manually if you want full removal.

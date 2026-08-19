@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "plugins": {
+    "example-plugin": {
+      "reason": "Reviewed by owner on 2026-08-18; specific findings accepted",
+      "allow": ["INSTALL-SCRIPT", "NET-EGRESS"]
+    }
+  }
+}
