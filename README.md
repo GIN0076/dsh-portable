@@ -1,5 +1,7 @@
 # DSH-Portable
 
+> ⭐ **If DSH-Portable helps you, please give it a star — it helps others find it. / 如果这个项目对你有帮助，欢迎点个 Star 支持！**
+
 **A self-contained Windows desktop build of [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness)** — Electron shell + bundled Node runtime, running the official MIT-licensed agent framework on `127.0.0.1` with zero system dependencies. Built for personal use, now open-sourced.
 
 **基于 DeepSeek 官方 MIT 开源代码构建的非官方 Windows 桌面发行版**：Electron 桌面壳 + 内置 Node，无需安装 Node/pnpm，装完即用。
