@@ -9,6 +9,7 @@ runtime/
 # --- Build artifacts ---
 dist/
 build/stage/
+build/stage-rc8/
 build/stg/
 *.7z
 *.tgz
