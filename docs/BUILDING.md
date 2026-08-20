@@ -57,7 +57,15 @@ node ..\build\flatten.js .
 
 This deletes package-level `node_modules` and re-creates each workspace package under the root `node_modules` via hard links/copies.
 
-3. Compress into the installer payload:
+3. Localize the built-in command descriptions (packaging-layer patch; official source stays zero-modified):
+
+```powershell
+node ..\build\localize-commands.js .
+```
+
+The official upstream hardcodes English descriptions for `compact` / `export` / `feedback` / `goal` / `permission` / `plan`. This script rewrites them to Chinese in the **built output only** (`packages/*/lib` and the flattened `node_modules/@deepseek-ai/*/lib`). It is idempotent and fails loudly if upstream changes a source string.
+
+4. Compress into the installer payload:
 
 ```powershell
 ..\tools\7zr.exe a -t7z -mx=9 -mmt=on ..\staging\src.7z .
