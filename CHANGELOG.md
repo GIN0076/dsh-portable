@@ -9,6 +9,7 @@ All notable changes to DSH-Portable (the packaging layer). The upstream DeepSeek
 - **Upstream**: rebased onto official `deepseek-ai/deepseek-harness` `dsh-v0.1.0-rc.8` (commit `141eb6f`), built on Windows, installed and verified (web HTTP 200, Electron smoke).
 - **Shell**: `dsh web` is launched with `--no-open` so the desktop app no longer opens an extra browser tab on start.
 - **Installer**: `DSH-Portable-Setup-0.1.0-rc.8.exe` (~727 MB).
+- **发布方式调整**：因官方更新器在 Windows 下无法可靠自动升级，本次 RC8 改为直接封装发布（手工构建 + 验证），不再依赖自动更新器，请用户谅解。
 
 ## 0.1.0-rc.7 (2026-08-18 → 2026-08-19)
 

@@ -69,6 +69,8 @@ DSH-Portable/
 ## 📋 Update Interruption Notice / 更新中止说明
 
 > 2026-08-20：RC7 → RC8 自动更新中止的直接原因是官方更新器在当前 Windows 权限/文件系统环境下**处理临时目录失败**——不是硬件问题、不是 RC7 无法升级 RC8、不是数据损坏、也不是依赖修复回退。详见 [docs/rc8-update-interruption.md](docs/rc8-update-interruption.md)。
+>
+> 由于官方更新器在当前 Windows 环境下无法可靠完成自动升级，**本项目现已改为直接封装发布 RC8 安装包**（手工构建、验证后提供），不再依赖官方更新器自动升级。给您带来不便，请谅解。
 
 ## 🔧 Development / 开发
 
