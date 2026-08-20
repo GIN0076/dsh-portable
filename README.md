@@ -66,6 +66,10 @@ DSH-Portable/
 
 > `src/` (the official DeepSeek Harness source tree) is **not** committed — see [docs/BUILDING.md](docs/BUILDING.md). The official clone is kept **zero-modified**; all custom work lives in `addons/`, `shell/`, `installer/`, `scripts/`, `build/`.
 
+## 📋 Update Interruption Notice / 更新中止说明
+
+> 2026-08-20：RC7 → RC8 自动更新中止的直接原因是官方更新器在当前 Windows 权限/文件系统环境下**处理临时目录失败**——不是硬件问题、不是 RC7 无法升级 RC8、不是数据损坏、也不是依赖修复回退。详见 [docs/rc8-update-interruption.md](docs/rc8-update-interruption.md)。
+
 ## 🔧 Development / 开发
 
 - **Architecture**: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — full design process (Phase 1–6), module docs, security model, and the history of lessons learned.
