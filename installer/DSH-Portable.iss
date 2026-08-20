@@ -12,8 +12,8 @@
 ;   - 开机自启为向导选项，默认关闭；仅勾选时写 HKCU Run
 
 #define MyAppName "DSH-Portable"
-#define MyAppVersion "0.1.0-rc.7"
-#define MyAppVerNum "0.1.0.7"
+#define MyAppVersion "0.1.0-rc.8"
+#define MyAppVerNum "0.1.0.8"
 #define MyAppPublisher "DSH-Portable (unofficial local build)"
 #define MyAppExeName "DSH-Portable.exe"
 #ifndef SourceRoot

@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "rules": [
+    {
+      "id": "DYN-EXEC",
+      "tier": "RED",
+      "name": "Dynamic code execution",
+      "desc": "eval / new Function / vm.runIn* with runtime-composed code is a classic obfuscation and privilege-escalation vector.",
+      "patterns": [
+        "\\beval\\s*\\(",
+        "\\bnew\\s+Function\\s*\\(",
+        "\\bvm\\.runIn(NewContext|ThisContext|Context)\\s*\\("
+      ]
+    },
+    {
+      "id": "OBFUSCATION-B64",
+      "tier": "RED",
+      "name": "Base64 / hex blob obfuscation",
+      "desc": "Long base64 or hex strings usually carry encoded payloads or hidden configuration.",
+      "patterns": [
+        "[A-Za-z0-9+/]{180,}={0,2}",
+        "(?:\\\\x[0-9a-fA-F]{2}){40,}",
+        "(?:\\\\u[0-9a-fA-F]{4}){20,}"
+      ]
+    },
+    {
+      "id": "CRED-READ",
+      "tier": "RED",
+      "name": "Credential / secret access",
+      "desc": "Reads DSH credential files, the anonymous user id, or model API keys. Even reading secrets outside the plugin's own config is a red flag.",
+      "patterns": [
+        "\\.credentials\\.yaml",
+        "\\.anonymous-user-id",
+        "DEEPSEEK_API_KEY",
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "GEMINI_API_KEY",
+        "AZURE_OPENAI_API_KEY",
+        "BEDROCK_AUTH_TOKEN",
+        "api[_-]?key\\s*[:=]"
+      ]
+    },
+    {
+      "id": "OOB-WRITE",
+      "tier": "RED",
+      "name": "Out-of-bounds write",
+      "desc": "Writes outside the plugin / profile directory via .. traversal or absolute system paths.",
+      "patterns": [
+        "(writeFile|appendFile|createWriteStream|mkdir|unlink|rmSync|rename|copyFile)\\s*\\([^)]*\\.\\.",
+        "(writeFile|appendFile|createWriteStream|mkdir|unlink|rmSync|rename|copyFile)\\s*\\([^)]*(APPDATA|USERPROFILE|HOMEDRIVE|ProgramFiles)"
+      ]
+    },
+    {
+      "id": "BINARY-PAYLOAD",
+      "tier": "RED",
+      "name": "Binary payload",
+      "desc": "Executable / native binaries shipped inside the plugin package.",
+      "patterns": []
+    },
+    {
+      "id": "MALICIOUS-HASH",
+      "tier": "RED",
+      "name": "Known malicious file hash",
+      "desc": "A packaged file's SHA-256 matches the local malicious-hashes library.",
+      "patterns": []
+    },
+    {
+      "id": "INSTALL-SCRIPT",
+      "tier": "RISK",
+      "name": "Install / preinstall / postinstall script",
+      "desc": "Runs arbitrary code at install time, before review can gate it. Requires explicit confirmation.",
+      "patterns": []
+    },
+    {
+      "id": "NET-EGRESS",
+      "tier": "RISK",
+      "name": "Network egress",
+      "desc": "HTTP(S)/WebSocket/socket calls. Lines that only target localhost are downgraded to INFO.",
+      "patterns": [
+        "\\bfetch\\s*\\(",
+        "\\bhttps?\\.request\\s*\\(",
+        "\\baxios\\s*",
+        "\\bWebSocket\\s*\\(",
+        "\\bnet\\.(connect|createConnection)\\s*\\("
+      ]
+    },
+    {
+      "id": "CHILD-PROC",
+      "tier": "RISK",
+      "name": "Child process execution",
+      "desc": "Spawns processes. Not automatically malicious, but it can escape the plugin sandbox.",
+      "patterns": [
+        "child_process",
+        "\\bspawn\\s*\\(",
+        "\\bexec(?:File)?(?:Sync)?\\s*\\(",
+        "\\bfork\\s*\\("
+      ]
+    },
+    {
+      "id": "SESSION-READ",
+      "tier": "RISK",
+      "name": "Session / profile data access",
+      "desc": "Reads session logs or profile data. Confirm before allowing, since it exposes conversation history.",
+      "patterns": [
+        "(readFile|readdir|stat|createReadStream|glob)\\s*\\([^)]*(profiles|sessions|rollout|\\.dsh|\\.jsonl)"
+      ]
+    },
+    {
+      "id": "FILE-WRITE",
+      "tier": "RISK",
+      "name": "Filesystem write",
+      "desc": "Generic write operations. Confirm target scope before allowing.",
+      "patterns": [
+        "writeFile(?:Sync)?\\s*\\(",
+        "appendFile(?:Sync)?\\s*\\(",
+        "createWriteStream\\s*\\(",
+        "unlink(?:Sync)?\\s*\\(",
+        "rmSync\\s*\\(",
+        "rename(?:Sync)?\\s*\\(",
+        "mkdir(?:Sync)?\\s*\\("
+      ]
+    },
+    {
+      "id": "ENV-ACCESS",
+      "tier": "INFO",
+      "name": "Environment variable access",
+      "desc": "Generic process.env reads; recorded but not restricted.",
+      "patterns": [
+        "process\\.env"
+      ]
+    },
+    {
+      "id": "FILE-READ",
+      "tier": "INFO",
+      "name": "Filesystem read",
+      "desc": "Read-only file access; recorded for the audit trail.",
+      "patterns": [
+        "readFile(?:Sync)?\\s*\\(",
+        "createReadStream\\s*\\(",
+        "readdir(?:Sync)?\\s*\\("
+      ]
+    },
+    {
+      "id": "MINIFIED",
+      "tier": "INFO",
+      "name": "Minified / very long line",
+      "desc": "Single lines over 3000 chars hinder review; recorded for manual attention.",
+      "patterns": []
+    }
+  ]
+}

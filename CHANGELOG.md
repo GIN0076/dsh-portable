@@ -2,6 +2,14 @@
 
 All notable changes to DSH-Portable (the packaging layer). The upstream DeepSeek Harness version is tracked in `upstream-lock.json` / `version-manifest.json`.
 
+## 0.1.0-rc.8 (2026-08-20)
+
+### Upstream rebase + shell polish
+
+- **Upstream**: rebased onto official `deepseek-ai/deepseek-harness` `dsh-v0.1.0-rc.8` (commit `141eb6f`), built on Windows, installed and verified (web HTTP 200, Electron smoke).
+- **Shell**: `dsh web` is launched with `--no-open` so the desktop app no longer opens an extra browser tab on start.
+- **Installer**: `DSH-Portable-Setup-0.1.0-rc.8.exe` (~727 MB).
+
 ## 0.1.0-rc.7 (2026-08-18 → 2026-08-19)
 
 ### Initial release — full packaging (Phases 1–6)

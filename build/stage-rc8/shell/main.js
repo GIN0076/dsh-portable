@@ -102,22 +102,13 @@ function startService() {
   serverProc.once('exit', (code) => {
     serviceExited = true
     serverProc = null
-    // A running update (triggered from the settings "Update Check" card via
-    // update-dsh.ps1 apply) stops this service on purpose. The updater writes
-    // a `.updating` marker next to the app root; when it is present, exit
-    // quietly instead of showing the "unexpected exit" error box.
-    const updatingMark = path.join(ROOT_DIR, '.updating')
-    const isUpdating = fs.existsSync(updatingMark)
-    if (!isQuitting && !SMOKE && !isUpdating) {
+    if (!isQuitting && !SMOKE) {
       dialog.showErrorBox(
         'DSH-Portable',
         lang === 'zh'
           ? `DSH web 服务意外退出（code=${code}），应用将关闭。`
           : `The DSH web service exited unexpectedly (code=${code}). The app will close.`
       )
-      isQuitting = true
-      app.quit()
-    } else if (isUpdating) {
       isQuitting = true
       app.quit()
     }

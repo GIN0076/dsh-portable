@@ -471,7 +471,7 @@ function Invoke-Apply {
     $zipPath = Join-Path $tmpRoot 'source.zip'
     New-Item -ItemType Directory -Path $tmpRoot -Force | Out-Null
     # Short stage name on purpose: Windows LongPathsEnabled=0 caps paths at ~260
-# chars, and a long name like "update-stage-dsh-v0.1.0-rc.8" pushed deep
+    # chars, and a long name like "update-stage-dsh-v0.1.0-rc.7" pushed deep
     # node_modules paths past the limit. "stg" keeps stage paths equal to src.
     $stageDir = Join-Path $ProgramRoot 'stg'
     Remove-DeepTree $stageDir
@@ -595,12 +595,6 @@ function Invoke-Apply {
     } finally {
         Remove-DeepTree $tmpRoot
         if ($updateOk) { Remove-DeepTree $stageDir }
-        # Update-UI 触发的更新：清理 .updating 标记（Electron 壳靠它区分
-        # "更新导致的退出"与"意外退出"，见 shell/main.js）。
-        $updatingMark = Join-Path $ProgramRoot '.updating'
-        if (Test-Path -LiteralPath $updatingMark) {
-            Remove-Item -LiteralPath $updatingMark -Force -ErrorAction SilentlyContinue
-        }
     }
 }
 

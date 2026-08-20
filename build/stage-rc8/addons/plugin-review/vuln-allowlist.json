@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "packages": {
+    "example-dep@1.0.0": "Transitive dev-only; no runtime impact (owner-reviewed)"
+  }
+}

@@ -28,7 +28,7 @@
 
 ## 📦 Installation / 安装
 
-Download the installer from [Releases](../../releases) (`DSH-Portable-Setup-0.1.0-rc.8.exe`, ~727 MB):
+Download the installer from [Releases](../../releases) (`DSH-Portable-Setup-0.1.0-rc.7.exe`, ~700 MB):
 
 1. Run the installer. Language follows the system (中文 / English), switchable.
 2. Read the license & disclaimer — **declining aborts the install**.

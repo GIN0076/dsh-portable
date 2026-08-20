@@ -17,7 +17,7 @@ This document walks through building the installer from scratch. It is the path 
 # Mirror clone (GitHub direct may be blocked)
 git clone https://ghfast.top/https://github.com/deepseek-ai/deepseek-harness.git src
 cd src
-git checkout dsh-v0.1.0-rc.7          # or the tag you want to package
+git checkout dsh-v0.1.0-rc.8          # or the tag you want to package
 
 pnpm install --frozen-lockfile
 pnpm run typecheck
@@ -99,7 +99,7 @@ Notes:
 
 ```powershell
 # silent install into a scratch dir
-dist\DSH-Portable-Setup-0.1.0-rc.7.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="C:\tmp\dsh-inst" /DATADIR="C:\tmp\dsh-data" /NODESKTOP /NOSTARTMENU /NOAUTOSTART
+dist\DSH-Portable-Setup-0.1.0-rc.8.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR="C:\tmp\dsh-inst" /DATADIR="C:\tmp\dsh-data" /NODESKTOP /NOSTARTMENU /NOAUTOSTART
 
 # smoke: boot the web service from the installed tree
 & "C:\tmp\dsh-inst\runtime\node\node.exe" "C:\tmp\dsh-inst\src\apps\cli\lib\bin.js" web --host 127.0.0.1 --port 3099

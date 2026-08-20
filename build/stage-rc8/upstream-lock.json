@@ -1,0 +1,16 @@
+{
+  "lockfile": {
+    "path": "src/pnpm-lock.yaml",
+    "sha256": "af037e0f6c18f13e2388c2a010da742e890187e513fd9226b726b6eab4cbe149"
+  },
+  "upstream": {
+    "commit": "141eb6fef83422698aef7a981029e843e8161534",
+    "tag": "dsh-v0.1.0-rc.8",
+    "mirror": "https://ghfast.top/https://github.com/deepseek-ai/deepseek-harness.git",
+    "version": "0.1.0-rc.8",
+    "name": "deepseek-harness",
+    "repository": "https://github.com/deepseek-ai/deepseek-harness.git"
+  },
+  "schemaVersion": 1,
+  "fetchedAt": "2026-08-20T06:52:12.8644606Z"
+}
