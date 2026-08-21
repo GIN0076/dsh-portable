@@ -51,16 +51,11 @@ function Get-Sha256Text([string]$Text) {
 function Remove-DeepTree([string]$Path) {
     # Windows LongPathsEnabled=0 breaks Remove-Item -Recurse on deep
     # node_modules trees (>260 chars). Built-in Node handles long paths
-    # natively; fall back to the .NET AppContext long-path switches.
+    # natively and is the only reliable deleter here; fail loudly if it does not.
     if (-not (Test-Path -LiteralPath $Path)) { return }
-    try {
-        & $NodeBin -e "require('fs').rmSync(process.argv[1], { recursive: true, force: true })" $Path 2>$null
-        if ($LASTEXITCODE -ne 0) { throw "node rm failed (exit $LASTEXITCODE)" }
-        return
-    } catch {
-        [System.AppContext]::SetSwitch('Switch.System.IO.UseLegacyPathHandling', $false)
-        [System.AppContext]::SetSwitch('Switch.System.IO.BlockLongPaths', $false)
-        Remove-Item -LiteralPath $Path -Recurse -Force
+    & $NodeBin -e "require('fs').rmSync(process.argv[1], { recursive: true, force: true })" $Path
+    if ($LASTEXITCODE -ne 0) {
+        throw "node rm failed for $Path (exit $LASTEXITCODE); remove manually with node fs.rmSync"
     }
 }
 
@@ -499,7 +494,24 @@ function Invoke-Apply {
 
         # 3. Extract and verify.
         Write-Step 'extracting ...'
-        Expand-Archive -LiteralPath $zipPath -DestinationPath $tmpRoot -Force
+        # Windows Expand-Archive cannot handle the upstream zip's symlink /
+        # long-path entries and silently yields an empty tree. Prefer Python
+        # zipfile (proven on this archive), keeping Expand-Archive as fallback.
+        $pyCandidates = @(
+            (Join-Path $env:USERPROFILE '.workbuddy\binaries\python\versions\3.13.12\python.exe'),
+            (Join-Path $env:USERPROFILE '.workbuddy\binaries\python\versions\3.14.6\python.exe')
+        ) | Where-Object { Test-Path -LiteralPath $_ }
+        if ($pyCandidates.Count -eq 0 -and (Get-Command python.exe -ErrorAction SilentlyContinue)) {
+            $pyCandidates += 'python.exe'
+        }
+        $python = $pyCandidates | Select-Object -First 1
+        if ($python) {
+            $pyScript = 'import sys,zipfile; z=zipfile.ZipFile(sys.argv[1]); z.testzip(); z.extractall(sys.argv[2])'
+            & $python -c $pyScript $zipPath $tmpRoot
+            if ($LASTEXITCODE -ne 0) { throw "zip extraction failed (python exit $LASTEXITCODE)" }
+        } else {
+            Expand-Archive -LiteralPath $zipPath -DestinationPath $tmpRoot -Force
+        }
         $topDirs = @(Get-ChildItem -LiteralPath $tmpRoot -Directory | Where-Object { $_.Name -ne 'source.zip' -and $_.Name -ne 'extract' })
         $extract = Join-Path $tmpRoot 'extract'
         New-Item -ItemType Directory -Path $extract -Force | Out-Null
