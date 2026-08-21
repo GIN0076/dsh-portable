@@ -123,6 +123,38 @@ dist\DSH-Portable-Setup-0.1.0-rc.8.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART 
 
 `addons/update-engine/update-dsh.ps1 -Mode check|apply` performs tag enumeration (multi-mirror, OpenSSL fallback, GitHub-API fallback), download, verification, staging build, atomic swap, node_modules relink, self-check and rollback. Run it from the installed tree (or with `-ProgramRoot`). The Web UI card (`dsh-update-check` plugin) and the tray menu both invoke it.
 
+## 8. Plugin install compatibility vetting（插件装前自检）
+
+rc.8 的 keyed 槽位强制要求 `options.key`（契约定义在官方 `packages/client/ui-slots`，例如 `settings.plugin.item`）。旧插件（如 rc.6 时代）常漏写 `key`，装进去后 HARNESS 会直接报
+`Failed to load plugins … keyed slot "…" requires options.key`，整个界面不可用。另外，**任何在 app 的 `src` 里执行的 pnpm 操作都会冲坏封装好的扁平化 node_modules**（`src/node_modules/@deepseek-ai` 会被清空，启动报 `Cannot find package '@deepseek-ai/dsh-app-boot'`）。因此装插件必须走下面的自检流程。
+
+**装前自检流程（5 步）**
+
+1. **查资料**：读插件 README、`dsh.plugin.json`、`cordis.patch.yml` 与 client 源码，确认目标 rc 兼容性（如 README 写明的 Harness 版本）。
+2. **跑检测**：用 `tools/slots-rc8.json`（从官方 slot-catalog 抽出的 rc.8 槽位契约表，keyed 槽位必须带 key）+ `tools/vet-plugin.py` 检查：manifest 声明、peer 版本 vs rc.8、client 槽位注册逐个核对（keyed 缺 key → FAIL；注册不存在的槽位 → WARN）、`cordis.patch`、构建脚本。
+3. **FAIL 先修，用 pnpm 补丁机制固化**（不要直接改 `node_modules`，否则下次 pnpm install 会被覆盖）：
+
+```yaml
+# profiles/web/pnpm-workspace.yaml
+patchedDependencies:
+  beav-creator-dsh@0.1.2: patches/beav-creator-dsh@0.1.2.patch
+```
+
+```diff
+// patches/beav-creator-dsh@0.1.2.patch
+@@ -14828,6 +14828,7 @@ function apply(ctx) {
+   ctx.slots.inject("settings.plugin.item", () => ctx.slots.register({
+     name: "settings.plugin.item",
+     id: "beav",
++    key: "beav",
+     order: 40,
+```
+
+4. **安装**：把插件写进 `$DSH_HOME/profiles/web/package.json` 的 `dsh.profile.bundles` + `dependencies`，然后**只在 profile 目录**执行 `pnpm install`（`cd $DSH_HOME/profiles/web`），绝不把 pnpm 指向 app 的 `src`。
+5. **验证**：重启 web 服务 → HARNESS 无报错；`dump-config` 复核；已装插件可随时跑 `vet --installed <包名>` 复查。
+
+> 已知案例：`beav-creator-dsh@0.1.2` 注册 `settings.plugin.item` 缺 `options.key` → 用上述补丁固化。仓库内另有 `build/patch-beav-key.cjs` 作为"安装已被覆盖时"的一键应急修复。
+
 ## Troubleshooting quick hits
 
 - `pnpm install` hits the 260-char path limit → enable `core.longpaths`, keep staging dir names short (`stg`).
