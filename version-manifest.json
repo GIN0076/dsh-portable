@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "name": "DSH-Portable",
+  "version": "0.1.1-rc.2",
+  "upstream": {
+    "name": "deepseek-harness",
+    "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
+    "mirror": "https://ghfast.top/https://github.com/deepseek-ai/deepseek-harness.git",
+    "tag": "dsh-v0.1.1-rc.2",
+    "version": "0.1.1-rc.2",
+    "commit": "b150a551b8d465e31e418e1b2eaf5e79bbb7d28e"
+  },
+  "builtAt": "2026-08-27T16:14:56.290375+00:00",
+  "toolchain": {
+    "node": "v24.19.0",
+    "pnpm": "11.7.0"
+  },
+  "artifacts": {
+    "cli": {
+      "path": "src/apps/cli/lib/bin.js",
+      "sha256": "c0226687bb20f45c603ec6fe50f3de16d1c3510c3a803304ec575ef9bc366c62"
+    },
+    "webDistIndex": {
+      "path": "src/apps/web/dist/index.html",
+      "sha256": "03421099b0a3a7f754be610e9eb53afc24f88a3e760cd25b005e2ec34fb35a6c"
+    }
+  }
+}
