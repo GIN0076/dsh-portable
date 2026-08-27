@@ -19,7 +19,7 @@
 
 ```powershell
 # 审计：写一条记录
-.\audit\dsh-audit.ps1 log -Type update.apply -PluginId dsh-portable -Detail "applied rc.8" -Before 0.1.0-rc.7 -After 0.1.0-rc.8 -Result ok -Session $env:CODEX_SESSION_ID
+.\audit\dsh-audit.ps1 log -Type update.apply -PluginId dsh-portable -Detail "applied rc.2" -Before 0.1.1-rc.1 -After 0.1.1-rc.2 -Result ok -Session $env:CODEX_SESSION_ID
 
 # 审计：列出 / 筛选 / 单插件时间线 / 链校验 / 保留期清理 / 问题复盘 / 导出
 .\audit\dsh-audit.ps1 list -Limit 20

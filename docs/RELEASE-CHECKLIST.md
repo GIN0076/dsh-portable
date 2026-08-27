@@ -25,7 +25,7 @@
 ## 1. 上游源码（`src/`）
 
 - [ ] `src/` 为**从零修改**的上游克隆（用 `git status` 对照 `src/` 应无本地改动）。
-- [ ] 上游锁定在目标 tag（如 `dsh-v0.1.0-rc.8`），与 `upstream-lock.json` 一致。
+- [ ] 上游锁定在目标 tag（如 `dsh-v0.1.1-rc.2`），与 `upstream-lock.json` 一致。
 - [ ] `src/` 未被提交到本仓库（在 `.gitignore` 中，`/src/` 规则生效）。
 - [ ] 打包时 `pnpm install --frozen-lockfile`、`pnpm run typecheck`、`pnpm run build` 全部退出码 0。
 
