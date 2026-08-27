@@ -13,7 +13,7 @@ All notable changes to DSH-Portable (the packaging layer). The upstream DeepSeek
 - **Manifests**: `version-manifest.json` / `upstream-lock.json` pinned to `dsh-v0.1.1-rc.2` with artifact SHA-256.
 - **Docs**: added `docs/RELEASE-CHECKLIST.md`; aligned `docs/BUILDING.md` with ISCC 7 (`--define=SourceRoot=<abs>`); updated README/ARCHITECTURE to the new layout and version.
 - **Security hardening (dev configs)**: replaced the `spawnSync` pwsh probe in `src/vitest.config.ts` with a path-existence check; served `llms.txt` through a plain-text download helper in `src/website/.vitepress/config.ts`.
-- **Installer**: `DSH-Portable-Setup-0.1.1-rc.2.exe` (~728 MB, SHA-256 `9d7bdacc925cd7ea20a7b37a9e43771db15ea4b77748aadd94a5fe120470fd67`), verified: silent install, installed tree boot (HTTP 200 with bundled Node), stop script, uninstall keeps data dir, plugin-review gate, update check.
+- **Installer**: `DSH-Portable-Setup-0.1.1-rc.2.exe` (~728 MB, SHA-256 `2ac7bedc94f9861e8a067de4b888e89846fe174133d5edccbfaead08c5fa6bcb`), verified: silent install, installed tree boot (HTTP 200 with bundled Node), stop script, uninstall keeps data dir, plugin-review gate, update check.
 
 ## 0.1.0-rc.8 (2026-08-20)
 
