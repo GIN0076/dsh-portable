@@ -2,6 +2,19 @@
 
 All notable changes to DSH-Portable (the packaging layer). The upstream DeepSeek Harness version is tracked in `upstream-lock.json` / `version-manifest.json`.
 
+## 0.1.1-rc.2 (2026-08-28)
+
+### Upstream rebase + repository restructure + packaging fixes
+
+- **Upstream**: rebased onto official `deepseek-ai/deepseek-harness` `dsh-v0.1.1-rc.2` (commit `b150a551`); built on Windows; `pnpm install --frozen-lockfile` / `typecheck` / `build` all green (hoisted + flattened packaging with `pnpm@11.7.0`).
+- **Repository layout**: `shell/` → `apps/desktop-shell/`; `addons/*` → `packages/*` (audit, plugin-market, plugin-review, plugin-workshop, privacy, translation, update-engine, update-ui); Windows cmd wrappers → `scripts/windows/`.
+- **Fix `build/flatten.js`**: `path.resolve(p) !== rootNm` compared an absolute path against a relative one, so the root `node_modules` was always deleted and third-party dependencies were dropped from `src.7z`. Now compares `path.resolve(...).toLowerCase()` on both sides.
+- **Fix installer** (`installer/DSH-Portable.iss`): leftover `shell\` paths for `launcher-config.json` write/delete, shortcut params, and autostart; added `scripts\stop-dsh.ps1` / `clean-dsh.ps1` copy so the `scripts\windows\*.cmd` wrappers resolve.
+- **Manifests**: `version-manifest.json` / `upstream-lock.json` pinned to `dsh-v0.1.1-rc.2` with artifact SHA-256.
+- **Docs**: added `docs/RELEASE-CHECKLIST.md`; aligned `docs/BUILDING.md` with ISCC 7 (`--define=SourceRoot=<abs>`); updated README/ARCHITECTURE to the new layout and version.
+- **Security hardening (dev configs)**: replaced the `spawnSync` pwsh probe in `src/vitest.config.ts` with a path-existence check; served `llms.txt` through a plain-text download helper in `src/website/.vitepress/config.ts`.
+- **Installer**: `DSH-Portable-Setup-0.1.1-rc.2.exe` (~728 MB, SHA-256 `9d7bdacc925cd7ea20a7b37a9e43771db15ea4b77748aadd94a5fe120470fd67`), verified: silent install, installed tree boot (HTTP 200 with bundled Node), stop script, uninstall keeps data dir, plugin-review gate, update check.
+
 ## 0.1.0-rc.8 (2026-08-20)
 
 ### Upstream rebase + shell polish

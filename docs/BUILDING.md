@@ -92,15 +92,22 @@ staging/
 
 ## 5. Compile the installer (Phase 4)
 
+Install Inno Setup once into the workspace, then compile:
+
 ```powershell
 tools\InnoSetup7\innosetup-7.1.0-x64.exe /VERYSILENT /DIR="tools\InnoSetup7\installed"
-# then compile with tools\InnoSetup7\installed\ISCC.exe
+
+# compile (ISCC 7: use --define, not /D; pass an ABSOLUTE SourceRoot — a
+# relative path resolves against the .iss directory)
+tools\InnoSetup7\installed\ISCC.exe --define=SourceRoot="E:\<abs-path-to-repo>\staging" installer\DSH-Portable.iss
 # output: dist\DSH-Portable-Setup-<version>.exe
 ```
 
 Notes:
 
-- `/DSourceRoot` is **camelCase** — `/DSOURCE_ROOT` silently falls back to the default and will build the wrong tree.
+- `/DSourceRoot` (ISCC 6 style) is **not accepted** by ISCC 7; use `--define=SourceRoot=<abs path>`.
+- `SourceRoot` must be absolute: a relative path resolves against the `.iss` directory and misses `staging\`.
+- `staging` must contain `src.7z`, `7zr.exe`, `runtime\`, `apps\desktop-shell\`, `packages\`, `scripts\` (with `stop-dsh.ps1` / `clean-dsh.ps1` and `windows\*.cmd`), `README.md`, `upstream-lock.json`, `version-manifest.json`.
 - The `.iss` contains Chinese; keep it **UTF-8 with BOM** (Inno reads it as ANSI otherwise and the Chinese text/files get garbled).
 - The installer requires no admin (`PrivilegesRequired=lowest`), is bilingual, writes the data directory into `apps\desktop-shell\launcher-config.json`, and creates shortcuts via `{userdesktop}`.
 
