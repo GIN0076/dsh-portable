@@ -47,7 +47,7 @@
 - [ ] 在 `src/` 内设置 `nodeLinker: hoisted`，并重新 `pnpm install --frozen-lockfile`。
 - [ ] 运行 `build/flatten.js`（结果：全树无 junction，`node_modules` 平铺在根目录，`iscc` 可安全跟进）。
 - [ ] 若要本地化命令描述，运行 `build/localize-commands.js`（仅改构建产物，不改 `src/`）。
-- [ ] 用 `7zr.exe` 生成 `src.7z`，确认压缩大小符合预期（约 238 MB）。
+- [ ] 用 `7zr.exe` 生成 `src.7z`，确认压缩大小符合预期（约 260 MB；rc.2 之前为 244 MB，alpha.1 上游体积更大）。
 - [ ] 用 `tools/InnoSetup7/ISCC.exe /DSourceRoot=staging installer/DSH-Portable.iss` 编译。
   - 注意 `/DSourceRoot` 为 camelCase。
   - `.iss` 保持 **UTF-8 带 BOM**，否则中文/界面乱码。
