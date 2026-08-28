@@ -15,6 +15,7 @@ All notable changes to DSH-Portable (the packaging layer). The upstream DeepSeek
 - **Security hardening (dev configs)**: replaced the `spawnSync` pwsh probe in `src/vitest.config.ts` with a path-existence check; served `llms.txt` through a plain-text download helper in `src/website/.vitepress/config.ts`.
 - **Installer**: `DSH-Portable-Setup-0.1.1-rc.2.exe` (~728 MB, SHA-256 `2ac7bedc94f9861e8a067de4b888e89846fe174133d5edccbfaead08c5fa6bcb`), verified: silent install, installed tree boot (HTTP 200 with bundled Node), stop script, uninstall keeps data dir, plugin-review gate, update check.
 - **Security notes**: added `docs/SECURITY.md` recording the Mimosa deep scan result — packaging-layer code has no real high-severity finding (the single hit was a false positive); the 75 static findings all belong to upstream `src/`; scan itself ran `partial/inconclusive`, so this build does **not** claim to have passed a full security audit.
+- **In-app auto-update gated by default**: real-machine testing of `0.1.1-rc.2 → 0.1.2-alpha.1` showed three "update" clicks produced zero `update.apply` events (Electron's Job Object kills the detached updater on `app.quit()`). The GUI entry points (tray "Check for updates", Web "更新检查" card) are now hidden unless `DSH_ENABLE_UPDATE=1` or `"enableUpdate": true` in `apps/desktop-shell/launcher-config.json`. `packages/update-engine/update-dsh.ps1` remains for advanced users; installer excludes `packages/update-ui` so the card does not render.
 
 ## 0.1.0-rc.8 (2026-08-20)
 

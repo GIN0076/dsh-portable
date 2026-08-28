@@ -2,6 +2,14 @@
 
 > 本节如实记录 DSH-Portable 的安全扫描状态与结论。**本项目不宣称"已通过安全审计"**，以下内容仅陈述已执行检查及其实结果。
 
+## 更新机制状态（按 0.1.1-rc.2 实测）
+
+- 在真实桌面机上对 `rc.2 → alpha.1` 原地升级进行了**三次**实测（监控进程、审计日志、`.updating` 标记、磁盘状态）；
+- **三次 apply 都未启动**：审计日志仅有 `update.check`，从未出现 `update.apply`；监控显示 `update-dsh.ps1` powershell 进程从未存活超过 1 秒；
+- 根因定位：Electron 在 Windows 上通过 Job Object 管理子进程，detach 子进程在 `app.quit()` 时会被一起终止，即便设置了 `CREATE_BREAKAWAY_FROM_JOB`，Node.js `child_process.spawn` 仍把 stdout/stderr 通过 Job 持有的句柄传给父进程，父进程退出即失效；
+- 这是**发布策略**问题，不是构建/签名问题：默认将 GUI 入口（设置页更新检查卡片 + 托盘菜单"检查更新"）隐藏，保留 `packages/update-engine/update-dsh.ps1` 作为高级用户/运维手动升级入口；
+- GUI 入口重新打开方法：在 `apps/desktop-shell/launcher-config.json` 设置 `"enableUpdate": true` 或设置环境变量 `DSH_ENABLE_UPDATE=1`。
+
 ## 扫描记录
 
 - 工具：Mimosa 深度安全扫描（static + cross-file taint）
