@@ -4,6 +4,17 @@
 
 ---
 
+## 当前最新发布（2026-08-28）
+
+- **DSH-Portable 0.1.2-alpha.1**  ← 基于 DeepSeek Harness `dsh-v0.1.2-alpha.1` (commit `cd5ef81`)
+- 安装包：`dist/DSH-Portable-Setup-0.1.2-alpha.1.exe`
+- SHA-256：`20e2996b747fc019cee4c899612582c7361151e3c595d59f22da68dc35861f74`
+- 状态：✅ 通过清单验证（安装 / 启动 / update-ui 排除 / 无 GUI 自动更新残留）
+
+历史版本：`v0.1.0-rc.8`、`v0.1.0-rc.7`、`v0.1.1-rc.2` 通过 `git tag` 留档；旧安装包不保留在 `dist/`（需要时可由对应 commit 重新构建）。
+
+---
+
 ## 0. 前置准备
 
 - [ ] 确定目标版本号，并同步更新：
