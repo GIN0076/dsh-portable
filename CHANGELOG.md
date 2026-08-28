@@ -14,6 +14,7 @@ All notable changes to DSH-Portable (the packaging layer). The upstream DeepSeek
 - **Docs**: added `docs/RELEASE-CHECKLIST.md`; aligned `docs/BUILDING.md` with ISCC 7 (`--define=SourceRoot=<abs>`); updated README/ARCHITECTURE to the new layout and version.
 - **Security hardening (dev configs)**: replaced the `spawnSync` pwsh probe in `src/vitest.config.ts` with a path-existence check; served `llms.txt` through a plain-text download helper in `src/website/.vitepress/config.ts`.
 - **Installer**: `DSH-Portable-Setup-0.1.1-rc.2.exe` (~728 MB, SHA-256 `2ac7bedc94f9861e8a067de4b888e89846fe174133d5edccbfaead08c5fa6bcb`), verified: silent install, installed tree boot (HTTP 200 with bundled Node), stop script, uninstall keeps data dir, plugin-review gate, update check.
+- **Security notes**: added `docs/SECURITY.md` recording the Mimosa deep scan result — packaging-layer code has no real high-severity finding (the single hit was a false positive); the 75 static findings all belong to upstream `src/`; scan itself ran `partial/inconclusive`, so this build does **not** claim to have passed a full security audit.
 
 ## 0.1.0-rc.8 (2026-08-20)
 
