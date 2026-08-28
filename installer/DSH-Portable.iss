@@ -56,7 +56,7 @@ Source: "{#SourceRoot}\src.7z"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceRoot}\7zr.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceRoot}\runtime\*"; DestDir: "{app}\runtime"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourceRoot}\apps\desktop-shell\*"; DestDir: "{app}\apps\desktop-shell"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "launcher-config.json,install-log.txt"
-Source: "{#SourceRoot}\packages\*"; DestDir: "{app}\packages"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "update-ui\*,update-ui\**\*"
+Source: "{#SourceRoot}\packages\*"; DestDir: "{app}\packages"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "update-ui,update-ui\*"
 Source: "{#SourceRoot}\scripts\windows\*"; DestDir: "{app}\scripts\windows"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourceRoot}\scripts\stop-dsh.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
 Source: "{#SourceRoot}\scripts\clean-dsh.ps1"; DestDir: "{app}\scripts"; Flags: ignoreversion
