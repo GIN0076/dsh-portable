@@ -68,7 +68,48 @@ function Write-Audit {
     }
 }
 
+# 防 SSRF：仅允许 http/https，且目标 host 不得是 localhost / 回环 / 私有 / 保留地址。
+function Assert-SafeUrl([string]$Url) {
+    $uri = $null
+    if (-not [System.Uri]::TryCreate($Url, [System.UriKind]::Absolute, [ref]$uri)) {
+        throw "unsafe URL (not absolute): $Url"
+    }
+    if ($uri.Scheme -ne 'http' -and $uri.Scheme -ne 'https') {
+        throw "unsafe URL scheme ($($uri.Scheme)): $Url"
+    }
+    $hostName = $uri.DnsSafeHost
+    if ($hostName -ieq 'localhost') { throw "unsafe URL host (localhost): $Url" }
+    $ip = $null
+    if ([System.Net.IPAddress]::TryParse($hostName, [ref]$ip)) {
+        if ([System.Net.IPAddress]::IsLoopback($ip)) { throw "unsafe URL host (loopback): $Url" }
+        $bytes = $ip.GetAddressBytes()
+        if ($ip.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork) {
+            if ($bytes[0] -eq 10) { throw "unsafe URL host (private 10/8): $Url" }
+            if ($bytes[0] -eq 172 -and $bytes[1] -ge 16 -and $bytes[1] -le 31) { throw "unsafe URL host (private 172.16/12): $Url" }
+            if ($bytes[0] -eq 192 -and $bytes[1] -eq 168) { throw "unsafe URL host (private 192.168/16): $Url" }
+            if ($bytes[0] -eq 169 -and $bytes[1] -eq 254) { throw "unsafe URL host (link-local 169.254/16): $Url" }
+            if ($bytes[0] -eq 0) { throw "unsafe URL host (0.0.0.0): $Url" }
+            if ($bytes[0] -ge 224) { throw "unsafe URL host (multicast/reserved): $Url" }
+        }
+    }
+    return $uri
+}
+
+function Get-PackageDownloads([string]$Package) {
+    # npm downloads API（npmmirror 镜像同源）；失败时返回 0，不阻断主流程。
+    try {
+        $url = "$Mirror/downloads/point/last-month/$([uri]::EscapeDataString($Package))"
+        $null = Assert-SafeUrl $url
+        $r = Invoke-RegistryJson $url
+        if ($r.downloads -is [int] -or $r.downloads -is [long]) { return [long]$r.downloads }
+        return 0
+    } catch {
+        return 0
+    }
+}
+
 function Invoke-RegistryJson([string]$Url) {
+    $null = Assert-SafeUrl $Url
     # 优先 .NET（schannel）；失败自动降级内置 Node（OpenSSL/undici fetch）
     try {
         return Invoke-RestMethod -Uri $Url -TimeoutSec 30
@@ -87,12 +128,20 @@ function Invoke-Search {
     if ($Json) {
         $items = @($r.objects | ForEach-Object {
             $p = $_.package
+            $keywords = @()
+            if ($p.keywords) { $keywords = @($p.keywords | ForEach-Object { [string]$_ }) }
+            $downloads = Get-PackageDownloads $p.name
+            # popularity：以月下载量为依据归一化到 0..1（10 万/月封顶）。
+            $popularity = [Math]::Min(1.0, $downloads / 100000.0)
             [pscustomobject]@{
                 name = $p.name
                 version = $p.version
                 description = $p.description
                 publisher = $p.publisher.username
                 date = $p.date
+                keywords = $keywords
+                downloads = $downloads
+                popularity = [Math]::Round($popularity, 3)
             }
         })
         $items | ConvertTo-Json -Depth 5 -Compress
@@ -114,12 +163,19 @@ function Invoke-Info {
         $latestVer = $r.versions.($r.'dist-tags'.latest)
         $deps = @{}
         if ($latestVer.dependencies) { $latestVer.dependencies.PSObject.Properties | ForEach-Object { $deps[$_.Name] = $_.Value } }
+        $keywords = @()
+        if ($r.keywords) { $keywords = @($r.keywords | ForEach-Object { [string]$_ }) }
+        $downloads = Get-PackageDownloads $r.name
+        $popularity = [Math]::Min(1.0, $downloads / 100000.0)
         [pscustomobject]@{
             name = $r.name
             latest = $r.'dist-tags'.latest
             license = $r.license
             description = $r.description
             repository = $r.repository.url
+            keywords = $keywords
+            downloads = $downloads
+            popularity = [Math]::Round($popularity, 3)
             dependencies = $deps
         } | ConvertTo-Json -Depth 5 -Compress
         return

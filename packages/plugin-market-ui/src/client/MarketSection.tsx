@@ -1,18 +1,21 @@
 /**
  * Plugin market settings section: search the npm registry through the host
- * loopback routes (/dsh-market/*), show results, and install through the M2
- * security gate. Mirrors the host route response shapes in lib/index.js.
+ * loopback routes (/dsh-market/*), filter by functional category, show
+ * popularity/downloads, and install through the M2 security gate.
  */
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { Button, IconLoadingOutline16, IconSearch16, IconWarningOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
 import css from './MarketSection.module.css'
 
-/** Mirrors the host route response shapes (lib/index.js). */
+/** Mirrors the host route response shapes (lib/index.js + dsh-market.ps1 -Json). */
 interface SearchResult {
   name: string
   version: string
   description?: string
   publisher?: string
+  keywords?: string[]
+  downloads?: number
+  popularity?: number
 }
 interface InfoResult {
   name: string
@@ -20,6 +23,9 @@ interface InfoResult {
   license?: string
   description?: string
   repository?: string
+  keywords?: string[]
+  downloads?: number
+  popularity?: number
   dependencies?: Record<string, string>
 }
 interface InstallResult {
@@ -32,12 +38,47 @@ interface InstalledResult {
   plugins?: Array<{ name: string; version: string }>
 }
 
+/** Functional categories derived from npm keywords. */
+type Category = 'dsh' | 'agent' | 'tool' | 'ui' | 'memory' | 'other'
+
+const CATEGORY_KEYWORDS: Record<Exclude<Category, 'other'>, string[]> = {
+  dsh: ['dsh', 'dsh-plugin', 'deepseek', 'harness', 'cordis', 'marketplace'],
+  agent: ['agent', 'agents', 'subagent', 'workflow', 'autonomous'],
+  tool: ['tool', 'tools', 'mcp', 'integration'],
+  ui: ['ui', 'theme', 'client', 'interface'],
+  memory: ['memory', 'session', 'context', 'recall'],
+}
+
+function categoryOf(pkg: { keywords?: string[] }): Category {
+  const kws = (pkg.keywords || []).map((k) => k.toLowerCase())
+  for (const cat of Object.keys(CATEGORY_KEYWORDS) as Exclude<Category, 'other'>[]) {
+    if (CATEGORY_KEYWORDS[cat].some((kw) => kws.includes(kw))) return cat
+  }
+  return 'other'
+}
+
+/** 12.3k / 1.4M formatting for downloads. */
+function formatDownloads(n: number): string {
+  if (!Number.isFinite(n) || n <= 0) return '0'
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`
+  return String(Math.round(n))
+}
+
+/** ★★☆☆☆ from popularity (0..1). */
+function stars(popularity: number | undefined): string {
+  const p = Number.isFinite(popularity || 0) ? (popularity || 0) : 0
+  const full = Math.round(p * 5)
+  return '★'.repeat(full) + '☆'.repeat(5 - full)
+}
+
 /** Localized text function from ctx.locale.bind(). */
 type Translate = (key: string) => string
 
 export function MarketSection(props: { t: Translate }) {
   const { t } = props
   const [query, setQuery] = useState('')
+  const [category, setCategory] = useState<Category | 'all'>('all')
   const [searching, setSearching] = useState(false)
   const [results, setResults] = useState<SearchResult[] | null>(null)
   const [installed, setInstalled] = useState<InstalledResult['plugins']>([])
@@ -47,6 +88,16 @@ export function MarketSection(props: { t: Translate }) {
   const [installing, setInstalling] = useState(false)
   const [installMsg, setInstallMsg] = useState<string | null>(null)
   const [approvalDetail, setApprovalDetail] = useState<string | null>(null)
+
+  const categoryKeys: Array<Category | 'all'> = useMemo(() => ['all', 'dsh', 'agent', 'tool', 'ui', 'memory', 'other'], [])
+  const catLabel = (cat: Category | 'all'): string =>
+    cat === 'all' ? t('all') : t(`cat${cat[0].toUpperCase()}${cat.slice(1)}`)
+
+  const filtered = useMemo(() => {
+    if (!results) return null
+    if (category === 'all') return results
+    return results.filter((pkg) => categoryOf(pkg) === category)
+  }, [results, category])
 
   const refreshInstalled = useCallback(async () => {
     try {
@@ -144,17 +195,37 @@ export function MarketSection(props: { t: Translate }) {
         </Button>
       </div>
 
+      <div className={css.catRow}>
+        {categoryKeys.map((cat) => (
+          <button
+            key={cat}
+            type="button"
+            className={`${css.catChip}${category === cat ? ` ${css.catChipActive}` : ''}`}
+            onClick={() => setCategory(cat)}
+          >
+            {catLabel(cat)}
+          </button>
+        ))}
+      </div>
+
       {error !== null && <div className={css.error}>{t('error')}: {error}</div>}
       {installMsg !== null && <div className={css.ok}>{installMsg}</div>}
 
-      {results !== null && results.length === 0 && <div className={css.warn}>{t('noResults')}</div>}
-      {results !== null && results.length > 0 && (
+      {filtered !== null && filtered.length === 0 && <div className={css.warn}>{t('noResults')}</div>}
+      {filtered !== null && filtered.length > 0 && (
         <div className={css.result}>
-          {results.map((pkg) => (
+          {filtered.map((pkg) => (
             <div key={pkg.name} className={css.row}>
-              <div>
-                <div className={css.name}>{pkg.name}</div>
-                <div className={css.meta}>{pkg.version}</div>
+              <div className={css.pkgInfo}>
+                <div className={css.name}>
+                  {pkg.name}
+                  <span className={css.catTag}>{catLabel(categoryOf(pkg))}</span>
+                </div>
+                <div className={css.meta}>
+                  {pkg.version}
+                  {pkg.downloads !== undefined && <span className={css.metaSep}>· {t('downloads')} {formatDownloads(pkg.downloads)}</span>}
+                  {pkg.popularity !== undefined && <span className={css.metaSep}>{stars(pkg.popularity)}</span>}
+                </div>
               </div>
               <div className={css.actions}>
                 <Button onClick={() => openInfo(pkg)}>{t('detail')}</Button>
@@ -178,7 +249,10 @@ export function MarketSection(props: { t: Translate }) {
           {info !== null && (
             <>
               <div className={css.line}>{t('latest')}: <b>{info.latest}</b></div>
+              {info.downloads !== undefined && <div className={css.line}>{t('downloads')}: <b>{formatDownloads(info.downloads)}</b></div>}
+              {info.popularity !== undefined && <div className={css.line}>{t('popularity')}: {stars(info.popularity)}</div>}
               {info.license && <div className={css.line}>{t('license')}: {info.license}</div>}
+              {info.keywords && info.keywords.length > 0 && <div className={css.line}>{t('keywords')}: {info.keywords.join(', ')}</div>}
               {info.description && <p className={css.desc}>{info.description}</p>}
               {info.repository && <div className={css.line}>{t('repository')}: {info.repository}</div>}
               {info.dependencies && Object.keys(info.dependencies).length > 0 && (

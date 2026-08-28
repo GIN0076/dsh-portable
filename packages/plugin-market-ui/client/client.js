@@ -46,6 +46,9 @@ window.__ModuleLoader__.load({ id: "dsh-market-ui", factory: (require) => {
 			latest: "最新版本",
 			repository: "仓库",
 			dependencies: "依赖",
+			keywords: "标签",
+			downloads: "月下载",
+			popularity: "热度",
 			noResults: "没有找到匹配的插件",
 			error: "操作失败",
 			confirmInstall: "确定安装「{name}」吗？\n\n安装前会经过 M2 安全审查；含风险项的插件需要逐项确认。",
@@ -54,7 +57,14 @@ window.__ModuleLoader__.load({ id: "dsh-market-ui", factory: (require) => {
 			rejected: "该插件被安全审查拒绝（RED 项），未安装",
 			installedOk: "已安装：{name}",
 			close: "关闭",
-			emptyInstalled: "尚未安装任何插件"
+			emptyInstalled: "尚未安装任何插件",
+			all: "全部",
+			catDsh: "DSH 相关",
+			catAgent: "Agent",
+			catTool: "工具",
+			catUi: "界面",
+			catMemory: "记忆",
+			catOther: "其他"
 		};
 		const en = {
 			nav: "Plugin Market",
@@ -70,6 +80,9 @@ window.__ModuleLoader__.load({ id: "dsh-market-ui", factory: (require) => {
 			latest: "Latest",
 			repository: "Repository",
 			dependencies: "Dependencies",
+			keywords: "Tags",
+			downloads: "Downloads/mo",
+			popularity: "Popularity",
 			noResults: "No matching plugins found",
 			error: "Failed",
 			confirmInstall: "Install \"{name}\"?\n\nIt will go through the M2 security review first; risky items require confirmation.",
@@ -78,11 +91,18 @@ window.__ModuleLoader__.load({ id: "dsh-market-ui", factory: (require) => {
 			rejected: "This plugin was rejected by the security review (RED items); not installed",
 			installedOk: "Installed: {name}",
 			close: "Close",
-			emptyInstalled: "No plugins installed yet"
+			emptyInstalled: "No plugins installed yet",
+			all: "All",
+			catDsh: "DSH",
+			catAgent: "Agent",
+			catTool: "Tools",
+			catUi: "UI",
+			catMemory: "Memory",
+			catOther: "Other"
 		};
 		//#endregion
 		//#region \0dsh-css:src/client/MarketSection.module.css.mjs
-		const css = "._3gkI7a_root{flex-direction:column;gap:12px;min-width:0;padding:4px 4px 16px;display:flex}._3gkI7a_title{margin:0;font-size:16px;font-weight:500;line-height:24px}._3gkI7a_sub{color:var(--dsw-alias-label-tertiary,#8b93a1);margin:0;font-size:13px;line-height:20px}._3gkI7a_searchRow{align-items:center;gap:8px;display:flex}._3gkI7a_searchInput{border:1px solid var(--dsw-alias-border-l2,#e5e7eb);background:var(--dsw-alias-bg-layer-2,#f7f8fa);min-width:0;height:32px;color:inherit;border-radius:6px;outline:none;flex:1;padding:0 10px;font-size:13px}._3gkI7a_searchInput:focus{border-color:var(--dsw-alias-border-brand,#4f6ef7)}._3gkI7a_actions{align-items:center;gap:8px;display:flex}._3gkI7a_result{background:var(--dsw-alias-bg-layer-2,#f7f8fa);border:1px solid var(--dsw-alias-border-l2,#e5e7eb);border-radius:8px;flex-direction:column;gap:6px;padding:12px 14px;display:flex}._3gkI7a_line{color:var(--dsw-alias-label-secondary,#6b7280);word-break:break-all;font-size:13px;line-height:20px}._3gkI7a_row{justify-content:space-between;align-items:center;gap:8px;display:flex}._3gkI7a_name{font-size:13px;font-weight:500}._3gkI7a_meta{color:var(--dsw-alias-label-tertiary,#9ca3af);font-size:12px}._3gkI7a_desc{color:var(--dsw-alias-label-secondary,#6b7280);margin:0;font-size:12px;line-height:18px}._3gkI7a_ok{color:var(--dsw-alias-state-success-primary,#16a34a);font-size:13px;font-weight:600}._3gkI7a_warn{color:var(--dsw-alias-state-warning-primary,#d97706);font-size:13px;font-weight:600}._3gkI7a_error{color:var(--dsw-alias-state-danger-primary,#dc2626);white-space:pre-wrap;word-break:break-all;font-size:13px}._3gkI7a_hint{color:var(--dsw-alias-label-tertiary,#9ca3af);margin:0;font-size:12px;line-height:18px}";
+		const css = "._3gkI7a_root{flex-direction:column;gap:12px;min-width:0;padding:4px 4px 16px;display:flex}._3gkI7a_title{margin:0;font-size:16px;font-weight:500;line-height:24px}._3gkI7a_sub{color:var(--dsw-alias-label-tertiary,#8b93a1);margin:0;font-size:13px;line-height:20px}._3gkI7a_searchRow{align-items:center;gap:8px;display:flex}._3gkI7a_searchInput{border:1px solid var(--dsw-alias-border-l2,#e5e7eb);background:var(--dsw-alias-bg-layer-2,#f7f8fa);min-width:0;height:32px;color:inherit;border-radius:6px;outline:none;flex:1;padding:0 10px;font-size:13px}._3gkI7a_searchInput:focus{border-color:var(--dsw-alias-border-brand,#4f6ef7)}._3gkI7a_actions{align-items:center;gap:8px;display:flex}._3gkI7a_result{background:var(--dsw-alias-bg-layer-2,#f7f8fa);border:1px solid var(--dsw-alias-border-l2,#e5e7eb);border-radius:8px;flex-direction:column;gap:6px;padding:12px 14px;display:flex}._3gkI7a_line{color:var(--dsw-alias-label-secondary,#6b7280);word-break:break-all;font-size:13px;line-height:20px}._3gkI7a_row{justify-content:space-between;align-items:center;gap:8px;display:flex}._3gkI7a_pkgInfo{flex:1;min-width:0}._3gkI7a_name{font-size:13px;font-weight:500}._3gkI7a_meta{color:var(--dsw-alias-label-tertiary,#9ca3af);margin-top:2px;font-size:12px}._3gkI7a_metaSep{margin-left:8px}._3gkI7a_catRow{flex-wrap:wrap;gap:6px;display:flex}._3gkI7a_catChip{border:1px solid var(--dsw-alias-border-l2,#e5e7eb);color:var(--dsw-alias-label-secondary,#6b7280);cursor:pointer;background:0 0;border-radius:999px;padding:2px 10px;font-size:12px;line-height:18px}._3gkI7a_catChipActive{border-color:var(--dsw-alias-border-brand,#4f6ef7);color:var(--dsw-alias-text-brand,#4f6ef7);background:var(--dsw-alias-bg-brand-weak,#eef1ff)}._3gkI7a_catTag{color:var(--dsw-alias-label-tertiary,#9ca3af);border:1px solid var(--dsw-alias-border-l2,#e5e7eb);vertical-align:middle;border-radius:4px;margin-left:8px;padding:0 6px;font-size:11px;line-height:16px;display:inline-block}._3gkI7a_desc{color:var(--dsw-alias-label-secondary,#6b7280);margin:0;font-size:12px;line-height:18px}._3gkI7a_ok{color:var(--dsw-alias-state-success-primary,#16a34a);font-size:13px;font-weight:600}._3gkI7a_warn{color:var(--dsw-alias-state-warning-primary,#d97706);font-size:13px;font-weight:600}._3gkI7a_error{color:var(--dsw-alias-state-danger-primary,#dc2626);white-space:pre-wrap;word-break:break-all;font-size:13px}._3gkI7a_hint{color:var(--dsw-alias-label-tertiary,#9ca3af);margin:0;font-size:12px;line-height:18px}";
 		const tagId = "\0dsh-css:src//client//MarketSection.module.css.mjs/MarketSection.module.css";
 		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
 			const tag = document.createElement("style");
@@ -92,33 +112,92 @@ window.__ModuleLoader__.load({ id: "dsh-market-ui", factory: (require) => {
 			document.head.appendChild(tag);
 		}
 		var MarketSection_module_css_default = {
-			"hint": "_3gkI7a_hint",
-			"root": "_3gkI7a_root",
-			"actions": "_3gkI7a_actions",
 			"searchInput": "_3gkI7a_searchInput",
-			"sub": "_3gkI7a_sub",
-			"name": "_3gkI7a_name",
-			"result": "_3gkI7a_result",
-			"desc": "_3gkI7a_desc",
-			"line": "_3gkI7a_line",
-			"warn": "_3gkI7a_warn",
+			"pkgInfo": "_3gkI7a_pkgInfo",
 			"searchRow": "_3gkI7a_searchRow",
+			"name": "_3gkI7a_name",
+			"actions": "_3gkI7a_actions",
+			"catChip": "_3gkI7a_catChip",
+			"ok": "_3gkI7a_ok",
 			"title": "_3gkI7a_title",
-			"row": "_3gkI7a_row",
-			"error": "_3gkI7a_error",
+			"result": "_3gkI7a_result",
+			"root": "_3gkI7a_root",
 			"meta": "_3gkI7a_meta",
-			"ok": "_3gkI7a_ok"
+			"catRow": "_3gkI7a_catRow",
+			"catTag": "_3gkI7a_catTag",
+			"error": "_3gkI7a_error",
+			"row": "_3gkI7a_row",
+			"metaSep": "_3gkI7a_metaSep",
+			"desc": "_3gkI7a_desc",
+			"warn": "_3gkI7a_warn",
+			"hint": "_3gkI7a_hint",
+			"catChipActive": "_3gkI7a_catChipActive",
+			"line": "_3gkI7a_line",
+			"sub": "_3gkI7a_sub"
 		};
 		//#endregion
 		//#region src/client/MarketSection.tsx
 		/**
 		* Plugin market settings section: search the npm registry through the host
-		* loopback routes (/dsh-market/*), show results, and install through the M2
-		* security gate. Mirrors the host route response shapes in lib/index.js.
+		* loopback routes (/dsh-market/*), filter by functional category, show
+		* popularity/downloads, and install through the M2 security gate.
 		*/
+		const CATEGORY_KEYWORDS = {
+			dsh: [
+				"dsh",
+				"dsh-plugin",
+				"deepseek",
+				"harness",
+				"cordis",
+				"marketplace"
+			],
+			agent: [
+				"agent",
+				"agents",
+				"subagent",
+				"workflow",
+				"autonomous"
+			],
+			tool: [
+				"tool",
+				"tools",
+				"mcp",
+				"integration"
+			],
+			ui: [
+				"ui",
+				"theme",
+				"client",
+				"interface"
+			],
+			memory: [
+				"memory",
+				"session",
+				"context",
+				"recall"
+			]
+		};
+		function categoryOf(pkg) {
+			const kws = (pkg.keywords || []).map((k) => k.toLowerCase());
+			for (const cat of Object.keys(CATEGORY_KEYWORDS)) if (CATEGORY_KEYWORDS[cat].some((kw) => kws.includes(kw))) return cat;
+			return "other";
+		}
+		/** 12.3k / 1.4M formatting for downloads. */
+		function formatDownloads(n) {
+			if (!Number.isFinite(n) || n <= 0) return "0";
+			if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`;
+			if (n >= 1e3) return `${(n / 1e3).toFixed(1)}k`;
+			return String(Math.round(n));
+		}
+		/** ★★☆☆☆ from popularity (0..1). */
+		function stars(popularity) {
+			const full = Math.round((Number.isFinite(popularity || 0) ? popularity || 0 : 0) * 5);
+			return "★".repeat(full) + "☆".repeat(5 - full);
+		}
 		function MarketSection(props) {
 			const { t } = props;
 			const [query, setQuery] = (0, react.useState)("");
+			const [category, setCategory] = (0, react.useState)("all");
 			const [searching, setSearching] = (0, react.useState)(false);
 			const [results, setResults] = (0, react.useState)(null);
 			const [installed, setInstalled] = (0, react.useState)([]);
@@ -128,6 +207,21 @@ window.__ModuleLoader__.load({ id: "dsh-market-ui", factory: (require) => {
 			const [installing, setInstalling] = (0, react.useState)(false);
 			const [installMsg, setInstallMsg] = (0, react.useState)(null);
 			const [approvalDetail, setApprovalDetail] = (0, react.useState)(null);
+			const categoryKeys = (0, react.useMemo)(() => [
+				"all",
+				"dsh",
+				"agent",
+				"tool",
+				"ui",
+				"memory",
+				"other"
+			], []);
+			const catLabel = (cat) => cat === "all" ? t("all") : t(`cat${cat[0].toUpperCase()}${cat.slice(1)}`);
+			const filtered = (0, react.useMemo)(() => {
+				if (!results) return null;
+				if (category === "all") return results;
+				return results.filter((pkg) => categoryOf(pkg) === category);
+			}, [results, category]);
 			const refreshInstalled = (0, react.useCallback)(async () => {
 				try {
 					const res = await fetch("/dsh-market/installed");
@@ -239,6 +333,15 @@ window.__ModuleLoader__.load({ id: "dsh-market-ui", factory: (require) => {
 							children: searching ? t("searching") : t("search")
 						})]
 					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: MarketSection_module_css_default.catRow,
+						children: categoryKeys.map((cat) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+							type: "button",
+							className: `${MarketSection_module_css_default.catChip}${category === cat ? ` ${MarketSection_module_css_default.catChipActive}` : ""}`,
+							onClick: () => setCategory(cat),
+							children: catLabel(cat)
+						}, cat))
+					}),
 					error !== null && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 						className: MarketSection_module_css_default.error,
 						children: [
@@ -251,21 +354,42 @@ window.__ModuleLoader__.load({ id: "dsh-market-ui", factory: (require) => {
 						className: MarketSection_module_css_default.ok,
 						children: installMsg
 					}),
-					results !== null && results.length === 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					filtered !== null && filtered.length === 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 						className: MarketSection_module_css_default.warn,
 						children: t("noResults")
 					}),
-					results !== null && results.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					filtered !== null && filtered.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
 						className: MarketSection_module_css_default.result,
-						children: results.map((pkg) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						children: filtered.map((pkg) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 							className: MarketSection_module_css_default.row,
-							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-								className: MarketSection_module_css_default.name,
-								children: pkg.name
-							}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
-								className: MarketSection_module_css_default.meta,
-								children: pkg.version
-							})] }), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+								className: MarketSection_module_css_default.pkgInfo,
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: MarketSection_module_css_default.name,
+									children: [pkg.name, /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: MarketSection_module_css_default.catTag,
+										children: catLabel(categoryOf(pkg))
+									})]
+								}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: MarketSection_module_css_default.meta,
+									children: [
+										pkg.version,
+										pkg.downloads !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+											className: MarketSection_module_css_default.metaSep,
+											children: [
+												"· ",
+												t("downloads"),
+												" ",
+												formatDownloads(pkg.downloads)
+											]
+										}),
+										pkg.popularity !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+											className: MarketSection_module_css_default.metaSep,
+											children: stars(pkg.popularity)
+										})
+									]
+								})]
+							}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 								className: MarketSection_module_css_default.actions,
 								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Button, {
 									onClick: () => openInfo(pkg),
@@ -313,12 +437,36 @@ window.__ModuleLoader__.load({ id: "dsh-market-ui", factory: (require) => {
 										/* @__PURE__ */ (0, react_jsx_runtime.jsx)("b", { children: info.latest })
 									]
 								}),
+								info.downloads !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: MarketSection_module_css_default.line,
+									children: [
+										t("downloads"),
+										": ",
+										/* @__PURE__ */ (0, react_jsx_runtime.jsx)("b", { children: formatDownloads(info.downloads) })
+									]
+								}),
+								info.popularity !== void 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: MarketSection_module_css_default.line,
+									children: [
+										t("popularity"),
+										": ",
+										stars(info.popularity)
+									]
+								}),
 								info.license && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
 									className: MarketSection_module_css_default.line,
 									children: [
 										t("license"),
 										": ",
 										info.license
+									]
+								}),
+								info.keywords && info.keywords.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+									className: MarketSection_module_css_default.line,
+									children: [
+										t("keywords"),
+										": ",
+										info.keywords.join(", ")
 									]
 								}),
 								info.description && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
