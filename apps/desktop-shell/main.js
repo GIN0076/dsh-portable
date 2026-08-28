@@ -15,7 +15,6 @@ const WEB_URL = `http://${HOST}:${PORT}`
 const ROOT_DIR = path.resolve(__dirname, '..', '..')
 const NODE_BIN = path.join(ROOT_DIR, 'runtime', 'node', 'node.exe')
 const CLI_BIN = path.join(ROOT_DIR, 'src', 'apps', 'cli', 'lib', 'bin.js')
-const UPDATE_SCRIPT = path.join(ROOT_DIR, 'packages', 'update-engine', 'update-dsh.ps1')
 
 function resolveDSHHome() {
   if (process.env.DSH_HOME) return process.env.DSH_HOME
@@ -32,23 +31,6 @@ const DSH_HOME = resolveDSHHome()
 const STATE_FILE = path.join(DSH_HOME, 'shell-state.json')
 
 const SMOKE = process.argv.includes('--smoke')
-
-// The in-app auto-update entry point (tray menu "check for updates" + Web
-// settings page update card) is opt-in. The upstream update path is a
-// `pnpm install` rebuild that downloads new source and replaces `src/`
-// in place; it can take tens of minutes and has historically been prone to
-// stalls under Electron's Job Object. We keep the PowerShell entry point
-// (`packages/update-engine/update-dsh.ps1`) available for advanced users
-// and operators, but surface it in the GUI only when explicitly enabled via
-// the DSH_ENABLE_UPDATE environment variable (or `launcher-config.json`).
-const UPDATE_GUI_ENABLED =
-  process.env.DSH_ENABLE_UPDATE === '1' ||
-  (() => {
-    try {
-      const cfg = JSON.parse(fs.readFileSync(path.join(__dirname, 'launcher-config.json'), 'utf8'))
-      return cfg && cfg.enableUpdate === true
-    } catch { return false }
-  })()
 const TRAY_ICON_B64 =
   'iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAC8SURBVFhHY2AYBVAgb93tIGvZ2UAvDLIPxQEgwTkrzvw/fu4RzTHIHpB9GA4ASdIDgOzB64CPn39guJoaGGQuUQ4A0XJWXVTHyOaPOmDUAUPZAVv+HwKrQgWPVi3AopaWDjixBSHWcZsoR9DOAVZd/2tPgARv/6/FUE8nBwSvevf///93/xemoKsfdQCdHDCwaSDlxH+QTvrmAjRAyHIqOoB8POqAUQcMHQcMeKuY1gCnAwa0ZzTgfcOBAgChuzf5Mrkq6QAAAABJRU5ErkJggg=='
 
@@ -58,7 +40,6 @@ let serverProc = null
 let serviceExited = false
 let isQuitting = false
 let lang = 'zh'
-let checkingUpdate = false
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -119,13 +100,7 @@ function startService() {
   serverProc.once('exit', (code) => {
     serviceExited = true
     serverProc = null
-    // A running update (triggered from the settings "Update Check" card via
-    // update-dsh.ps1 apply) stops this service on purpose. The updater writes
-    // a `.updating` marker next to the app root; when it is present, exit
-    // quietly instead of showing the "unexpected exit" error box.
-    const updatingMark = path.join(ROOT_DIR, '.updating')
-    const isUpdating = fs.existsSync(updatingMark)
-    if (!isQuitting && !SMOKE && !isUpdating) {
+    if (!isQuitting && !SMOKE) {
       dialog.showErrorBox(
         'DSH-Portable',
         lang === 'zh'
@@ -284,121 +259,12 @@ function createTray() {
   const icon = nativeImage.createDataURL(`data:image/png;base64,${TRAY_ICON_B64}`)
   tray = new Tray(icon)
   tray.setToolTip('DSH-Portable')
-  const items = [
+  tray.setContextMenu(Menu.buildFromTemplate([
     { label: lang === 'zh' ? '显示主界面' : 'Show', click: showWindow },
-  ]
-  if (UPDATE_GUI_ENABLED) {
-    items.push({ label: lang === 'zh' ? '检查更新' : 'Check for updates', click: runUpdateCheck })
-  }
-  items.push({ type: 'separator' })
-  items.push({ label: lang === 'zh' ? '退出' : 'Exit', click: quitApp })
-  tray.setContextMenu(Menu.buildFromTemplate(items))
+    { type: 'separator' },
+    { label: lang === 'zh' ? '退出' : 'Exit', click: quitApp },
+  ]))
   tray.on('double-click', showWindow)
-}
-
-function runUpdateCheck() {
-  if (!UPDATE_GUI_ENABLED) return
-  if (checkingUpdate) return
-  checkingUpdate = true
-  let done = false
-  let out = ''
-  let err = ''
-  const args = ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', UPDATE_SCRIPT, 'check', '-DshHome', DSH_HOME]
-  const proc = spawn('powershell.exe', args, { windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] })
-  proc.stdout.on('data', (chunk) => { out += chunk.toString() })
-  proc.stderr.on('data', (chunk) => { err += chunk.toString() })
-  proc.once('error', (error) => {
-    if (done) return
-    done = true
-    checkingUpdate = false
-    showUpdateResult(true, String(error && error.message ? error.message : error))
-  })
-  proc.once('exit', (code) => {
-    if (done) return
-    done = true
-    checkingUpdate = false
-    const text = (out + err).trim()
-    if (code !== 0 || !text) {
-      showUpdateResult(true, text || (lang === 'zh' ? `检查失败（code=${code}）` : `Check failed (code=${code})`))
-      return
-    }
-    const current = (text.match(/current=([0-9A-Za-z.\-]+)/) || [])[1] || '?'
-    const latest = (text.match(/latest=([0-9A-Za-z.\-]+)/) || [])[1] || '?'
-    if (/up to date/i.test(text)) {
-      showUpdateResult(false, lang === 'zh' ? `版本一致，无需更新（当前 ${current}）。` : `You are up to date (${current}).`)
-      return
-    }
-    if (/UPDATE AVAILABLE/i.test(text)) {
-      showUpdateAvailable(current, latest)
-      return
-    }
-    showUpdateResult(false, text)
-  })
-}
-
-function showUpdateResult(isError, detail) {
-  dialog.showMessageBox({
-    type: isError ? 'error' : 'info',
-    title: 'DSH-Portable',
-    message: lang === 'zh' ? '检查更新' : 'Check for updates',
-    detail: String(detail || ''),
-    buttons: [lang === 'zh' ? '确定' : 'OK'],
-    noLink: true,
-  })
-}
-
-function showUpdateAvailable(current, latest) {
-  const detail = lang === 'zh'
-    ? `当前版本：${current}\n最新版本：${latest}\n\n是否立即更新？更新过程中程序会自动停止并重启。`
-    : `Current version: ${current}\nLatest version: ${latest}\n\nUpdate now? The app will stop and restart during the update.`
-  dialog.showMessageBox({
-    type: 'info',
-    title: 'DSH-Portable',
-    message: lang === 'zh' ? '发现新版本' : 'Update available',
-    detail,
-    buttons: [lang === 'zh' ? '更新' : 'Update', lang === 'zh' ? '取消' : 'Cancel'],
-    defaultId: UPDATE_GUI_ENABLED ? 0 : 1,
-    cancelId: 1,
-    noLink: true,
-  }).then(({ response }) => {
-    if (response === 0 && UPDATE_GUI_ENABLED) startUpdate()
-  })
-}
-
-function startUpdate() {
-  if (!UPDATE_GUI_ENABLED) return
-  const args = ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', UPDATE_SCRIPT, 'apply', '-KillRunning', '-DshHome', DSH_HOME]
-  // Capture the updater's stdio so we can post-mortem any failure. Electron
-  // on Windows still terminates detached children via Job Object even with
-  // CREATE_BREAKAWAY_FROM_JOB; the log gives us evidence of where the
-  // updater got to before being killed.
-  const updateLogPath = path.join(DSH_HOME, 'update-stdout.log')
-  let updateLogStream = null
-  try {
-    fs.mkdirSync(DSH_HOME, { recursive: true })
-    updateLogStream = fs.openSync(updateLogPath, 'a')
-  } catch {}
-  const proc = spawn('powershell.exe', args, {
-    detached: true,
-    windowsHide: true,
-    stdio: ['ignore', updateLogStream ?? 'ignore', updateLogStream ?? 'ignore'],
-    creationflags: 0x08000000,
-  })
-  if (updateLogStream !== null) {
-    try { fs.writeSync(updateLogStream, `\n--- startUpdate @ ${new Date().toISOString()} pid=${proc.pid ?? '?'} ---\n`) } catch {}
-  }
-  proc.once('error', (error) => {
-    if (isQuitting) return
-    dialog.showErrorBox(
-      'DSH-Portable',
-      lang === 'zh'
-        ? `无法启动更新进程：${String(error.message || error)}`
-        : `Failed to start the update process: ${String(error.message || error)}`
-    )
-  })
-  proc.unref()
-  isQuitting = true
-  app.quit()
 }
 
 function showWindow() {
