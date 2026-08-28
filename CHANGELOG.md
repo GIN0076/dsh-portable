@@ -9,7 +9,8 @@ All notable changes to DSH-Portable (the packaging layer). The upstream DeepSeek
 - **Upstream**: rebased onto official `deepseek-ai/deepseek-harness` `dsh-v0.1.2-alpha.1` (commit `cd5ef81`); built on Windows; `pnpm install --frozen-lockfile` / `build` all green (hoisted + flattened packaging with `pnpm@11.7.0`); 218 client artifacts recorded.
 - **Security hardening (dev configs)** re-applied to upstream `src/vitest.config.ts` (path-existence check) and `src/website/.vitepress/config.ts` (`llms.txt` plain-text download).
 - **In-app auto-update remains disabled**: GUI entry points (tray item / Web settings card) still hidden; `packages/update-engine/update-dsh.ps1` retained for advanced users; `packages/update-ui` excluded from install.
-- **Installer**: `DSH-Portable-Setup-0.1.2-alpha.1.exe` (~747 MB, SHA-256 `20e2996b747fc019cee4c899612582c7361151e3c595d59f22da68dc35861f74`), verified: silent install, installed tree boot (bundled Node, HTTP 401 expected due to upstream `?token=` auth).
+- **Installer**: `DSH-Portable-Setup-0.1.2-alpha.1.exe` (~747 MB, SHA-256 `10a0d64e51e473a10260504ac25253888e19a9cf353df25ba7a92ed38889c8fb`), verified: silent install, installed tree boot (bundled Node, HTTP 401 expected due to upstream `?token=` auth).
+- **Plugin market GUI (new)**: added `packages/plugin-market-ui` — a Web settings-page card ("插件市场") that searches npm, shows package info, and installs through the M2 security gate. Host registers loopback-only routes `/dsh-market/{search,info,installed,install}`; client is a `settings.section` card built with tsdown. Added `-Json` output to `dsh-market.ps1` (search/info/installed) with UTF-8 encoding for the GUI. Activate once per install: `dsh plugin --profile web add "file:<install>\packages\plugin-market-ui"`. `packages/update-ui` remains excluded from the installer.
 
 ## 0.1.1-rc.2 (2026-08-28)
 

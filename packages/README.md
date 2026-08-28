@@ -1,19 +1,20 @@
 # DSH-Portable addons（附加层，out-of-tree）
 
-> 全部内容独立于官方 `src\` 克隆，符合"官方零修改"原则。工作区源码在 `E:\codex\开发应用\DSH-Portable\addons\`，部署目标 `D:\Software Installation\deepseek-harness\addons\`。
+> 全部内容独立于官方 `src\` 克隆，符合"官方零修改"原则。部署目标是安装树内的 `packages\` 目录。
 
 ## 目录
 
 | 模块 | 路径 | 说明 |
 |---|---|---|
 | M1 审计留痕 | `audit\dsh-audit.ps1` | `$DSH_HOME/audit/audit.jsonl` JSONL 台账：序号/时间/操作者/类型/插件ID/详情/变更前后/结果/证据/会话；链式 SHA-256 防篡改；筛选/导出/单插件时间线/问题复盘/保留期清理/链校验 |
-| M1 更新引擎 | `update-engine\update-dsh.ps1` | 自用版源码更新：镜像拉上游 tag → zip 下载 → 完整性校验（解压+版本对比）→ pnpm install/typecheck/build → 原子替换 + 自检（HTTP 200 + 端口释放）→ 失败回滚；更新前自动备份 `$DSH_HOME`；"下载预构建产物"模式留作未来开关 |
+| M1 更新引擎 | `update-engine\update-dsh.ps1` | 自用版源码更新：镜像拉上游 tag → zip 下载 → 完整性校验（解压+版本对比）→ pnpm install/typecheck/build → 原子替换 + 自检（HTTP 200 + 端口释放）→ 失败回滚；更新前自动备份 `$DSH_HOME`。"下载预构建产物"模式留作未来开关。**注意：GUI 自动更新入口已默认禁用，此脚本仅供高级用户/运维手动调用。** |
 | M1 隐私中心 | `privacy\dsh-privacy.ps1` | 遥测状态（默认 DISABLED）、匿名 ID 查看/重置（`$DSH_HOME/.anonymous-user-id`）、反馈分享状态、审计保留期清理、数据备份导出 |
 | M2 插件安全审查 | `plugin-review\review-plugin.ps1` | 安装前静态审查：8 类规则（安装脚本/网络外发/子进程/越界写/凭据会话读取/代码混淆/动态执行/二进制载荷）+ 证据行号；依赖漏洞白名单（可选 npm audit）+ 恶意 SHA-256 库；红旗→拒绝 / 风险→逐项确认（-Approve 或 allowlist）/ 提示→放行记录；运行时门禁契约输出（对接官方 user-approval） |
-| M3 插件市场 | `market\dsh-market.ps1` | `search`（npmmirror 搜索）/ `info`（包信息+许可证+依赖）/ `install`（npm pack → **过 M2 审查** → 官方 `dsh plugin add`；`-Approve` 逐项确认；`-DryRun` 演练）/ `installed`（profile 已装列表） |
-| M3 中文翻译层 | `translate\dsh-translate.ps1` | 字典覆盖（dicts→override.json，对齐官方 ns→common→zh→key 查找链）、强力翻译模式（逐插件 force-on/off）、模型翻译+本地缓存（OpenAI 兼容接口，key 只从环境变量读）、export-override 供运行时插件消费 |
-| M4 插件工坊 | `workshop\dsh-workshop.ps1` | `clarify`（需求澄清：缺失字段出问题清单）/ `new`（按官方 Cordis 格式生成插件：`ctx.commands.register` 命令 + `ctx.on` 事件 + 工具/服务占位）/ `test`（node 语法检查 + apply 导出校验 + **M2 审查**）/ `install`（备份 profile → M2 门禁 → 官方 `dsh plugin add "file:..."` → 失败自动恢复 profile）/ `list` |
-| M5 更新检查 UI | `update-ui\`（dsh-update-check 插件） | Web 设置页新增「更新检查」卡片：一键运行 `update-dsh.ps1 -Mode check` 并显示当前/最新版本；Host 侧注册 loopback-only 路由 `/dsh-update/check`，Client 侧注入 `settings.section`；安装：`dsh plugin --profile web add "file:<addons>\update-ui"`（路径勿含空格） |
+| M3 插件市场 | `plugin-market\dsh-market.ps1` | `search`（npmmirror 搜索）/ `info`（包信息+许可证+依赖）/ `install`（npm pack → **过 M2 审查** → 官方 `dsh plugin add`；`-Approve` 逐项确认；`-DryRun` 演练）/ `installed`（profile 已装列表）。支持 `-Json`（search/info/installed 输出 JSON，供 GUI 使用） |
+| M3 插件市场 UI | `plugin-market-ui\`（dsh-market-ui 插件） | Web 设置页新增「插件市场」卡片：搜索 / 详情 / 安装（过 M2 审查，风险项需确认）。Host 侧注册 loopback-only 路由 `/dsh-market/*`，Client 侧注入 `settings.section`。激活：`dsh plugin --profile web add "file:<install>\packages\plugin-market-ui"`（路径勿含空格） |
+| M3 中文翻译层 | `translation\dsh-translate.ps1` | 字典覆盖（dicts→override.json，对齐官方 ns→common→zh→key 查找链）、强力翻译模式（逐插件 force-on/off）、模型翻译+本地缓存（OpenAI 兼容接口，key 只从环境变量读）、export-override 供运行时插件消费 |
+| M4 插件工坊 | `plugin-workshop\dsh-workshop.ps1` | `clarify`（需求澄清：缺失字段出问题清单）/ `new`（按官方 Cordis 格式生成插件：`ctx.commands.register` 命令 + `ctx.on` 事件 + 工具/服务占位）/ `test`（node 语法检查 + apply 导出校验 + **M2 审查**）/ `install`（备份 profile → M2 门禁 → 官方 `dsh plugin add "file:..."` → 失败自动恢复 profile）/ `list` |
+| ~~M5 更新检查 UI~~ | `update-ui\`（已从安装包排除） | 自动更新 GUI 入口已按需求移除；此目录保留仅供历史/开发参考，不再随安装包分发 |
 
 ## 使用
 

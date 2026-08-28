@@ -15,10 +15,16 @@
     [string]$ReportOut = '',
     [string]$GateOut = '',
     [string]$NodeDir = '',
-    [string]$ProgramRoot = ''
+    [string]$ProgramRoot = '',
+    [switch]$Json
 )
 
 $ErrorActionPreference = 'Stop'
+
+# JSON 输出（-Json）给 GUI 消费：强制 UTF-8，避免中文描述在 OEM 代码页下乱码。
+if ($Json) {
+    try { [Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false) } catch { }
+}
 
 $Approve = @($Approve | ForEach-Object { $_ -split ',' } | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne '' })
 
@@ -78,6 +84,20 @@ function Invoke-Search {
     if (-not $Query) { throw 'search requires -Query' }
     $url = "$Mirror/-/v1/search?text=$([uri]::EscapeDataString($Query))&size=15"
     $r = Invoke-RegistryJson $url
+    if ($Json) {
+        $items = @($r.objects | ForEach-Object {
+            $p = $_.package
+            [pscustomobject]@{
+                name = $p.name
+                version = $p.version
+                description = $p.description
+                publisher = $p.publisher.username
+                date = $p.date
+            }
+        })
+        $items | ConvertTo-Json -Depth 5 -Compress
+        return
+    }
     Write-Host "[market] search '$Query': $($r.total) hit(s), showing up to 15"
     foreach ($obj in $r.objects) {
         $p = $obj.package
@@ -90,6 +110,20 @@ function Invoke-Info {
     if (-not $Package) { throw 'info requires -Package' }
     $url = "$Mirror/$Package"
     $r = Invoke-RegistryJson $url
+    if ($Json) {
+        $latestVer = $r.versions.($r.'dist-tags'.latest)
+        $deps = @{}
+        if ($latestVer.dependencies) { $latestVer.dependencies.PSObject.Properties | ForEach-Object { $deps[$_.Name] = $_.Value } }
+        [pscustomobject]@{
+            name = $r.name
+            latest = $r.'dist-tags'.latest
+            license = $r.license
+            description = $r.description
+            repository = $r.repository.url
+            dependencies = $deps
+        } | ConvertTo-Json -Depth 5 -Compress
+        return
+    }
     Write-Host "[market] $($r.name)"
     Write-Host "  latest   : $($r.'dist-tags'.latest)"
     Write-Host "  license  : $($r.license)"
@@ -207,6 +241,7 @@ function Invoke-Installed {
     $profileDir = Join-Path $DshHome "profiles\$Profile"
     $pkgPath = Join-Path $profileDir 'package.json'
     if (-not (Test-Path -LiteralPath $pkgPath)) {
+        if ($Json) { '[]' | Write-Output; return }
         Write-Host "[market] profile '$Profile' has no package.json yet ($profileDir); no plugins installed"
         return
     }
@@ -217,6 +252,12 @@ function Invoke-Installed {
     }
     if ($pkg.devDependencies) {
         $pkg.devDependencies.PSObject.Properties | ForEach-Object { $deps[$_.Name] = $_.Value }
+    }
+    if ($Json) {
+        @($deps.GetEnumerator() | Sort-Object Name | ForEach-Object {
+            [pscustomobject]@{ name = $_.Key; version = $_.Value }
+        }) | ConvertTo-Json -Depth 4 -Compress
+        return
     }
     Write-Host "[market] plugins in profile '$Profile' ($profileDir): $($deps.Count)"
     $deps.GetEnumerator() | Sort-Object Name | ForEach-Object { Write-Host ("  {0} {1}" -f $_.Key, $_.Value) }
