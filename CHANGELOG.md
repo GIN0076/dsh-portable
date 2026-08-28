@@ -2,6 +2,15 @@
 
 All notable changes to DSH-Portable (the packaging layer). The upstream DeepSeek Harness version is tracked in `upstream-lock.json` / `version-manifest.json`.
 
+## 0.1.2-alpha.1 (2026-08-28)
+
+### Upstream rebase onto alpha.1
+
+- **Upstream**: rebased onto official `deepseek-ai/deepseek-harness` `dsh-v0.1.2-alpha.1` (commit `cd5ef81`); built on Windows; `pnpm install --frozen-lockfile` / `build` all green (hoisted + flattened packaging with `pnpm@11.7.0`); 218 client artifacts recorded.
+- **Security hardening (dev configs)** re-applied to upstream `src/vitest.config.ts` (path-existence check) and `src/website/.vitepress/config.ts` (`llms.txt` plain-text download).
+- **In-app auto-update remains disabled**: GUI entry points (tray item / Web settings card) still hidden; `packages/update-engine/update-dsh.ps1` retained for advanced users; `packages/update-ui` excluded from install.
+- **Installer**: `DSH-Portable-Setup-0.1.2-alpha.1.exe` (~747 MB, SHA-256 `20e2996b747fc019cee4c899612582c7361151e3c595d59f22da68dc35861f74`), verified: silent install, installed tree boot (bundled Node, HTTP 401 expected due to upstream `?token=` auth).
+
 ## 0.1.1-rc.2 (2026-08-28)
 
 ### Upstream rebase + repository restructure + packaging fixes

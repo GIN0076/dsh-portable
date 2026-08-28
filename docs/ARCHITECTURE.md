@@ -2,13 +2,13 @@
 
 This document describes how DSH-Portable is put together, why it is shaped this way, and the full design/implementation process (Phases 1–6) with the lessons learned along the way.
 
-> Status: implemented against DeepSeek Harness `0.1.1-rc.2` (commit `b150a551b8d465e31e418e1b2eaf5e79bbb7d28e`).
+> Status: implemented against DeepSeek Harness `0.1.2-alpha.1` (commit `cd5ef8148158c3a752a658978873241fdf8e2bbc`).
 
 ---
 
 ## 1. Overview / 概述
 
-DSH-Portable wraps the official [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (MIT, developer preview `0.1.1-rc.2`) into a **self-contained Windows desktop application**:
+DSH-Portable wraps the official [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (MIT, developer preview `0.1.2-alpha.1`) into a **self-contained Windows desktop application**:
 
 - **Official source, zero modification.** `src/` is a pristine build of the upstream repository; every custom capability lives out-of-tree in `packages/`, `apps/desktop-shell/`, `installer/`, `scripts/`, `build/`.
 - **Bundled Node runtime** (`runtime/node/`) — the app does not depend on a system Node/pnpm install (verified PATH-independent).
@@ -69,7 +69,7 @@ The installed tree additionally contains `src/` (extracted from `src.7z` at inst
 
 ### Phase 1 — Base packaging
 
-- Clone the official repo **via mirrors** (`ghfast.top` first) at tag `dsh-v0.1.1-rc.2` into `src/`, zero modifications.
+- Clone the official repo **via mirrors** (`ghfast.top` first) at tag `dsh-v0.1.2-alpha.1` into `src/`, zero modifications.
 - `pnpm install --frozen-lockfile` (pnpm 11.7.0 pinned via `packageManager`), `pnpm run typecheck`, `pnpm run build` — all exit 0.
 - Bundle Node v24.19.0 into `runtime/node` (same major as the build toolchain, so native modules keep ABI compatibility).
 - Generate `version-manifest.json` (commit + artifact SHA-256) and `upstream-lock.json` (upstream pinning).

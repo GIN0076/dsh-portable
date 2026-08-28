@@ -4,13 +4,13 @@
     "name": "deepseek-harness",
     "repository": "https://github.com/deepseek-ai/deepseek-harness.git",
     "mirror": "https://ghfast.top/https://github.com/deepseek-ai/deepseek-harness.git",
-    "tag": "dsh-v0.1.1-rc.2",
-    "version": "0.1.1-rc.2",
-    "commit": "b150a551b8d465e31e418e1b2eaf5e79bbb7d28e"
+    "tag": "dsh-v0.1.2-alpha.1",
+    "version": "0.1.2-alpha.1",
+    "commit": "cd5ef8148158c3a752a658978873241fdf8e2bbc"
   },
-  "fetchedAt": "2026-08-27T16:14:56.290375+00:00",
+  "fetchedAt": "2026-08-28T09:49:43.807Z",
   "lockfile": {
     "path": "src/pnpm-lock.yaml",
-    "sha256": "6f20c268e76df1294c16f016ab10a7fa1271608b4db0f4fafe8f7c21ec90013e"
+    "sha256": "506ad1fc7c40f71ce8c6afe08724fdd55020c1a527d7a7a185c559d39ecfcaf1"
   }
 }

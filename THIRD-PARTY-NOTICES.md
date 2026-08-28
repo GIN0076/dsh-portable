@@ -6,7 +6,7 @@ DSH-Portable is a packaging of third-party software. Each component below retain
 
 | Component | Version | License | Notes |
 |---|---|---|---|
-| [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | 0.1.1-rc.2 | MIT | The agent framework being packaged. Fetched from upstream, built, kept **zero-modified**. |
+| [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) | 0.1.2-alpha.1 | MIT | The agent framework being packaged. Fetched from upstream, built, kept **zero-modified**. |
 | [Node.js](https://nodejs.org) | v24.19.0 | MIT | Bundled into `runtime/node/` for PATH independence. |
 | [Electron](https://www.electronjs.org) | 43.4.0 | MIT (app shell) + BSD-3-Clause & others (Chromium components) | `apps/desktop-shell/node_modules/electron`. See `apps/desktop-shell/node_modules/electron/LICENSE` and `LICENSES.chromium.html`. |
 | [Inno Setup](https://jrsoftware.org/isinfo.php) | 7.1.0 | Inno Setup License (free for commercial use; see its license) | Build-time only (`tools/InnoSetup7/`), portable, no registry writes. |
